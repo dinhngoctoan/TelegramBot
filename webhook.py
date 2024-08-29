@@ -9,8 +9,8 @@ import db
 import threading
 import queue
 load_dotenv
-#TOKEN = os.getenv("BOT_TOKEN")
-TOKEN ='7464937134:AAHnO8ORZhYnrIITWIMP5Bcu1QkqHmuOLbQ'
+TOKEN = os.getenv("BOT_TOKEN")
+
 print(TOKEN)
 #db.insertDB(1214141,343353,42424,'False','alex','nguyen',14353533,'2024-02-18',datetime.datetime.fromtimestamp(1724724239),'i dont know','this is a picture')
 
@@ -27,7 +27,7 @@ def check_date_format(date_text):
             #print("Giá trị ngày tháng không hợp lệ. Vui lòng nhập lại.")
         
 def get_moon_description(date):
-    url = f"https://api.nasa.gov/planetary/apod?date={date}&api_key=xGNab3f80aF6texedcxx6zC0uYXH8h3HmU7AStTU"
+    url = f"https://api.nasa.gov/planetary/apod?date={date}&api_key="
     response = requests.get(url)
     data = response.json()
     return data
