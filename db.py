@@ -12,7 +12,7 @@ def insertDB(update_id, message_id,user_id,is_bot,first_name,last_name,chat_id,d
     cur.execute("""INSERT INTO sent_messages(message_id,chat_id,user_id,text,photo) VALUES (%s,%s,%s,%s,%s) 
             """,(message_id,chat_id,user_id,text,photo,))
     cur.execute("""INSERT INTO updates(update_id,message_id,user_id,chat_id,date) VALUES (%s,%s,%s,%s,%s) ON CONFLICT (update_id) DO NOTHING
-            """,(update_id,message_id,user_id,chat_id,timestamp,))
+            """,(update_id,message_id,user_id,chat_id,datetime.datetime.fromtimestamp(timestamp),))
     conn.commit()
     cur.close()
     conn.close()

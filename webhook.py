@@ -4,30 +4,33 @@ from dotenv import load_dotenv
 import requests
 import os
 import re
-import datetime
+from datetime import datetime
 import db
 import threading
 import queue
 load_dotenv
-TOKEN = os.getenv("BOT_TOKEN")
-
+#TOKEN = os.getenv("BOT_TOKEN")
+TOKEN ='7464937134:AAHnO8ORZhYnrIITWIMP5Bcu1QkqHmuOLbQ'
 print(TOKEN)
 #db.insertDB(1214141,343353,42424,'False','alex','nguyen',14353533,'2024-02-18',datetime.datetime.fromtimestamp(1724724239),'i dont know','this is a picture')
-
+urlMess = f'https://api.telegram.org/bot{TOKEN}/sendMessage' 
+urlPhoto = f'https://api.telegram.org/bot{TOKEN}/sendPhoto'
 app = Flask(__name__)
 def check_date_format(date_text):
     pattern = r"^\d{4}-\d{2}-\d{2}$"
     if re.match(pattern, date_text):
         try:
+            print('True')
             datetime.strptime(date_text, '%Y-%m-%d')
             return True
             #print("Định dạng và giá trị ngày tháng hợp lệ:", date_text)
         except ValueError:
+             print("false")
              return False
             #print("Giá trị ngày tháng không hợp lệ. Vui lòng nhập lại.")
         
 def get_moon_description(date):
-    url = f"https://api.nasa.gov/planetary/apod?date={date}&api_key="
+    url = f"https://api.nasa.gov/planetary/apod?date={date}&api_key=xGNab3f80aF6texedcxx6zC0uYXH8h3HmU7AStTU"
     response = requests.get(url)
     data = response.json()
     return data
@@ -39,7 +42,7 @@ def worker():
             break
         print(task)
         db.insertDB(task['update_id'],task['update_id'],task['user_id'],task['is_bot'],task['first_name'],task['last_name'],
-                     task['chat_id'],task['date'],datetime.datetime.fromtimestamp(task['timestamp']),task['text'],task['photo'])
+                     task['chat_id'],task['date'],task['timestamp'],task['text'],task['photo'])
         task_queue.task_done()
 
 # Khởi tạo các luồng làm việc
@@ -55,7 +58,7 @@ def post_example():
     if request.method == 'POST':
         msg = request.get_json()  
         print("Message: ",msg)
-
+        chat_id = msg['message']['chat']['id']
         try:
             print("There is a text")
             chat_id = msg['message']['chat']['id']
@@ -69,8 +72,10 @@ def post_example():
             timestamp = msg['message']['date']
             print(chat_id)
             print(date)
-            if 1:
-                data = get_moon_description(date)    
+            if check_date_format(date):
+                data = get_moon_description(date)   
+                print(1)
+                print(data) 
                 text = data['explanation']     
                 photo = data['url']
                 print(text)
@@ -86,8 +91,6 @@ def post_example():
                                 'timestamp':timestamp,
                                 'text':text,
                                 'photo':photo})
-                urlMess = f'https://api.telegram.org/bot{TOKEN}/sendMessage' 
-                urlPhoto = f'https://api.telegram.org/bot{TOKEN}/sendPhoto'
                 payload = {
                     'chat_id': chat_id,
                     'photo': photo,
@@ -107,13 +110,18 @@ def post_example():
             else:
                 payload = {
                     'chat_id': chat_id,
-                    'text': "Đã xảy ra lỗi, vui lòng kiểm tra lại định dạng và kiểm tra về dữ liệu nhập vào"
+                    'text': "Đã xảy ra lỗi, vui lòng kiểm tra lại định dạng và kiểm tra về dữ liệu nhập vào. Hãy đảm bảo dữ liệu bạn nhập vào đảm bảo theo format 'YYYY-MM-DD'"
                     }
 
                 r = requests.post(urlMess, json=payload)   
         except:
-            print("No text found")
+            print('No text found')
+            payload = {
+                    'chat_id': chat_id,
+                    'text': "Đã xảy ra lỗi, vui lòng kiểm tra lại định dạng và kiểm tra về dữ liệu nhập vào. Hãy đảm bảo dữ liệu bạn nhập vào đảm bảo theo format 'YYYY-MM-DD'"
+                    }
 
+            r = requests.post(urlMess, json=payload)  
         return Response('ok', status=200)
 def shutdown_threads(exception=None):
     for i in range(num_threads):
