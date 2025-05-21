@@ -1,7 +1,7 @@
 import psycopg2
 import datetime
 def insertDB(update_id, message_id,user_id,is_bot,first_name,last_name,chat_id,date,timestamp,text,photo):
-    conn = psycopg2.connect(host="localhost", dbname="TeleBot",user="postgres",password="17102003",port=5432)
+    conn = psycopg2.connect(host="localhost", dbname="TeleBot",user="postgres",password="",port=5432)
     cur = conn.cursor()
     cur.execute("""INSERT INTO users(user_id,is_bot,first_name,last_name) VALUES (%s,%s,%s,%s) ON CONFLICT (user_id) DO NOTHING
             """,(user_id,is_bot,first_name,last_name,))
